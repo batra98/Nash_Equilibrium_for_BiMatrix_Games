@@ -175,9 +175,43 @@ to investigate.
         warnings.warn(warning, RuntimeWarning)
 
 
+rows = int(input())
+cols = int(input())
 
-A = np.array([[-2, -10], [-1, -5]])
-B = np.array([[-2, -1], [-10, -5]])
+nfg_format = input()
+nfg_format = list(nfg_format.split(" "))
 
-for i in support_enumeration(A, B, True):
-    print(i)
+A = np.zeros((rows,cols))
+B = np.zeros((rows,cols))
+
+
+k = 0
+for j in range(cols):
+    for i in range(rows):
+        # print(nfg_format[k],nfg_format[k+1])
+        A[i][j] = float(nfg_format[k])
+        B[i][j] = float(nfg_format[k+1])
+
+        k = k+2
+
+A = np.array(A)
+B = np.array(B)
+
+# A = np.array([[2, 0], [0, 1]])
+# B = np.array([[1, 0], [0, 2]])
+
+# A = np.array([[-2, -1], [-10, -5]])
+# B = np.array([[-2, -10], [-1, -5]])
+result = support_enumeration(A,B,True)
+
+for ele in result:
+    print(ele)
+# print(len(result))
+
+# for s1,s2 in result:
+#     for ele in s1:
+#         print(ele,end=" ")
+#     print()
+#     for ele in s2:
+#         print(ele,end=" ")
+#     print()

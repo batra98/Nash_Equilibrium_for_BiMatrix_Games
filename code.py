@@ -161,6 +161,7 @@ B = np.zeros((rows,cols))
 k = 0
 for j in range(cols):
     for i in range(rows):
+        # print(nfg_format[k],nfg_format[k+1])
         A[i][j] = float(nfg_format[k])
         B[i][j] = float(nfg_format[k+1])
 
@@ -178,6 +179,11 @@ result = support_enumeration(A,B)
 
 print(len(result))
 
-for row in result:
-    print(row)
+for s1,s2 in result:
+    for ele in s1:
+        print(ele,end=" ")
+    print()
+    for ele in s2:
+        print(ele,end=" ")
+    print()
 
