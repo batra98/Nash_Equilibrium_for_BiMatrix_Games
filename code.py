@@ -152,41 +152,33 @@ def support_enumeration(A, B):
     return result
 
 
-rows = int(input())
-cols = int(input())
+if __name__ == "__main__":
 
-nfg_format = input()
-nfg_format = list(nfg_format.split(" "))
+    rows = int(input())
+    cols = int(input())
+    A = np.zeros((rows, cols))
+    B = np.zeros((rows, cols))
 
-A = np.zeros((rows, cols))
-B = np.zeros((rows, cols))
+    nfg_format = input()
+    nfg_format = list(nfg_format.split(" "))
 
+    k = 0
+    for j in range(cols):
+        for i in range(rows):
+            A[i][j] = float(nfg_format[k])
+            B[i][j] = float(nfg_format[k+1])
+            k = k+2
 
-k = 0
-for j in range(cols):
-    for i in range(rows):
-        # print(nfg_format[k],nfg_format[k+1])
-        A[i][j] = float(nfg_format[k])
-        B[i][j] = float(nfg_format[k+1])
+    A = np.array(A)
+    B = np.array(B)
 
-        k = k+2
+    result = support_enumeration(A, B)
 
-A = np.array(A)
-B = np.array(B)
-
-# A = np.array([[2, 0], [0, 1]])
-# B = np.array([[1, 0], [0, 2]])
-
-# A = np.array([[-2, -1], [-10, -5]])
-# B = np.array([[-2, -10], [-1, -5]])
-result = support_enumeration(A, B)
-
-print(len(result))
-
-for s1,s2 in result:
-    for ele in s1:
-        print(ele,end=" ")
-    print()
-    for ele in s2:
-        print(ele,end=" ")
-    print()
+    print(len(result))
+    for s1, s2 in result:
+        for ele in s1:
+            print(ele, end=" ")
+        print()
+        for ele in s2:
+            print(ele, end=" ")
+        print()
