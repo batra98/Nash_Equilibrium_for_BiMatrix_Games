@@ -3,21 +3,22 @@ import numpy as np
 
 def powerset(n):
     """
-    return powerset of n (excluding null set)
+    Returns powerset of n (excluding null set)
     """
 
     from itertools import combinations
     P = []
-    for i in range(1, n+1, 1):
-        temp = combinations(range(n), i)
-        for j in temp:
-            P.append(j)
+    for sz in range(1, n+1, 1):
+        # create all possible combinations of size i
+        temp = combinations(range(n), sz)
+        for item in temp:
+            P.append(item)
     return P
 
 
 def potential_support_pairs(A, B):
     """
-    return all possible support pairs
+    Returns all possible support pairs
     """
 
     pl1_strat_no, pl2_strat_no = A.shape
@@ -82,8 +83,11 @@ def obey_support(strategy, support):
     if strategy is False:
         return False
 
-    if not all((i in support and value > 0) or (i not in support and value <= 0) for i, value in enumerate(strategy)):
-        return False
+    for index, value in enumerate(strategy):
+        if index in support and value <= 0:
+            return False
+        elif index not in support and value > 0:
+            return False
     return True
 
 
@@ -133,7 +137,7 @@ def is_ne(strategy, support, payoff):
     # check if best response
     fl2 = (col_util.max() == col_support_util.max())
 
-    return fl1 and fl2
+    return (fl1 and fl2)
 
 
 def support_enumeration(A, B):
@@ -154,8 +158,8 @@ cols = int(input())
 nfg_format = input()
 nfg_format = list(nfg_format.split(" "))
 
-A = np.zeros((rows,cols))
-B = np.zeros((rows,cols))
+A = np.zeros((rows, cols))
+B = np.zeros((rows, cols))
 
 
 k = 0
@@ -175,7 +179,7 @@ B = np.array(B)
 
 # A = np.array([[-2, -1], [-10, -5]])
 # B = np.array([[-2, -10], [-1, -5]])
-result = support_enumeration(A,B)
+result = support_enumeration(A, B)
 
 print(len(result))
 
@@ -186,4 +190,3 @@ for s1,s2 in result:
     for ele in s2:
         print(ele,end=" ")
     print()
-
