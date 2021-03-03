@@ -5,45 +5,20 @@ from itertools import product
 
 
 def build_halfspaces(M):
-    """
-    Build a matrix representation for a halfspace corresponding to:
-        Mx <= 1 and x >= 0
-    This is of the form:
-       [M: -1]
-       [-1: 0]
-    As specified in
-    https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.spatial.HalfspaceIntersection.html
-    Parameters
-    ----------
-        M: a numpy array
-    Returns:
-    --------
-        Numpy array
-    """
     number_of_strategies, dimension = M.shape
-    b = np.append(-np.ones(number_of_strategies), np.zeros(dimension))
-    M = np.append(M, -np.eye(dimension), axis=0)
-    halfspaces = np.column_stack((M, b.transpose()))
+    b = np.append([-1 for i in range(number_of_strategies)],
+                  [0 for i in range(dimension)])
+    I = np.eye(dimension)
+    M = np.vstack((M, -I))
+    halfspaces = np.column_stack((M, b.T))
     return halfspaces
 
 
 def non_trivial_vertices(halfspaces):
-    """
-    Returns all vertex, label pairs (ignoring the origin).
-    Parameters:
-        halfspaces: a numpy array
-    Returns:
-        generator
-    """
     feasible_point = find_feasible_point(halfspaces)
     hs = HalfspaceIntersection(halfspaces, feasible_point)
     hs.close()
-    return (
-        (v, set(
-            np.where(np.isclose(np.dot(halfspaces[:, :-1], v), -halfspaces[:, -1]))[0]))
-        for v in hs.intersections
-        if not np.all(np.isclose(v, 0)) and max(v) < np.inf
-    )
+    return ((v, set(np.where(np.isclose(np.dot(halfspaces[:, :-1], v), -halfspaces[:, -1]))[0])) for v in hs.intersections if not np.all(np.isclose(v, 0)) and max(v) < np.inf)
 
 
 def find_feasible_point(halfspaces):
@@ -90,7 +65,8 @@ def vertex_enumeration(A, B):
 
     result = []
     for row_v, row_l in non_trivial_vertices(row_halfspaces):
-        adjusted_row_l = set((label + number_of_row_strategies) % (max_label) for label in row_l)
+        adjusted_row_l = set((label + number_of_row_strategies) %
+                             (max_label) for label in row_l)
         for col_v, col_l in non_trivial_vertices(col_halfspaces):
             if adjusted_row_l.union(col_l) == full_labels:
                 result.append((row_v / sum(row_v), col_v / sum(col_v)))
