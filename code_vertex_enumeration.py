@@ -6,21 +6,6 @@ from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
 
-def labels(vertex, halfspaces):
-    """
-    Return the labels of the facets on which lie a given vertex. This is
-    calculated by carrying out the matrix multiplictation.
-    Parameters
-    ----------
-        vertex: a numpy array
-        halfspaces: a numpy array
-    Returns
-    -------
-       set
-    """
-    b = halfspaces[:, -1]
-    M = halfspaces[:, :-1]
-    return set(np.where(np.isclose(np.dot(M, vertex), -b))[0])
 
 
 def build_halfspaces(M):
@@ -57,7 +42,7 @@ def non_trivial_vertices(halfspaces):
     hs = HalfspaceIntersection(halfspaces, feasible_point)
     hs.close()
     return (
-        (v, labels(v, halfspaces))
+        (v, set(np.where(np.isclose(np.dot(halfspaces[:, :-1], v), -halfspaces[:, -1]))[0]))
         for v in hs.intersections
         if not np.all(np.isclose(v, 0)) and max(v) < np.inf
     )
