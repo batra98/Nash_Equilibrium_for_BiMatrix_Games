@@ -1,1 +1,4 @@
-# Nash_Equilibrium_for_BiMatrix_Games
+# Nash Equilibrium for BiMatrix Games using Support Enumeration
+
+- Just run the following
+```python code.py < <<input_file>>```
