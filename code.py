@@ -60,7 +60,7 @@ def IS_NE(strategy, support, payoff):
     col_util = np.dot(B.T, v) 
 
     # check if best response
-    fl2 = (col_util.max() == (col_util[np.array(support[1])]).max())
+    fl1 = (col_util.max() == (col_util[np.array(support[1])]).max())
 
     # row player
     u = strategy[1].reshape(strategy[1].size, 1)
@@ -69,7 +69,7 @@ def IS_NE(strategy, support, payoff):
     row_util = np.dot(A, u)
 
     # check if best response
-    fl1 = (row_util.max() == (row_util[np.array(support[0])]).max())
+    fl2 = (row_util.max() == (row_util[np.array(support[0])]).max())
 
     
 
@@ -107,8 +107,8 @@ def find_prob_vector(A, row_sup=None, col_sup=None):
 
     try:
         prob = np.linalg.solve(M, b)
-        for ind in prob:
-            if(ind < 0):
+        for val in prob:
+            if(val < 0):
                 return False
         return prob
     except np.linalg.linalg.LinAlgError:
@@ -122,15 +122,15 @@ def calculate_strat(A, B):
     result = []
     for pair in support_pairs(A, B):
 
-        s1 = find_prob_vector(B.T, *(pair[::-1]))
-        s2 = find_prob_vector(A, *pair)
+        strat1 = find_prob_vector(B.T, *(pair[::-1]))
+        strat2 = find_prob_vector(A, *pair)
 
-        if s1 is False:
+        if strat1 is False:
             continue
-        elif s2 is False:
+        elif strat2 is False:
             continue
-        elif obey_support(s1, pair[0]) and obey_support(s2, pair[1]):
-            result.append((s1, s2, pair[0], pair[1]))
+        elif obey_support(strat1, pair[0]) and obey_support(strat2, pair[1]):
+            result.append((strat1, strat2, pair[0], pair[1]))
     return result
 
 
@@ -140,9 +140,9 @@ def support_enumeration(A, B):
     """
 
     result = []
-    for s1, s2, sup1, sup2 in calculate_strat(A, B):
-        if IS_NE((s1, s2), (sup1, sup2), (A, B)):
-            result.append((s1, s2))
+    for strat1, strat2, sup1, sup2 in calculate_strat(A, B):
+        if IS_NE((strat1, strat2), (sup1, sup2), (A, B)):
+            result.append((strat1, strat2))
     return result
 
 
@@ -169,10 +169,12 @@ if __name__ == "__main__":
     result = support_enumeration(A, B)
 
     print(len(result))
-    for s1, s2 in result:
-        for ele in s1:
-            print(ele, end=" ")
-        print()
-        for ele in s2:
-            print(ele, end=" ")
-        print()
+    for strat1, strat2 in result:
+        print_str_strat = ""
+        for ind,ele in enumerate(strat1):
+            print_str_strat+= str(ele) + " "
+        print(print_str_strat.strip())
+        print_str_strat = ""
+        for ind,ele in enumerate(strat2):
+            print_str_strat+= str(ele) + " "
+        print(print_str_strat.strip())
