@@ -53,29 +53,25 @@ def IS_NE(strategy, support, payoff):
 
     A, B = payoff
 
+    # col player
+    v = strategy[0].reshape(strategy[0].size, 1)
+
+    # utilities of col when row player plays strategy
+    col_util = np.dot(B.T, v) 
+
+    # check if best response
+    fl2 = (col_util.max() == (col_util[np.array(support[1])]).max())
+
     # row player
     u = strategy[1].reshape(strategy[1].size, 1)
 
     # utilities of row when col player plays strategy
     row_util = np.dot(A, u)
 
-    # utilities for strategies in support
-    row_support_util = row_util[np.array(support[0])]
-
     # check if best response
-    fl1 = (row_util.max() == row_support_util.max())
+    fl1 = (row_util.max() == (row_util[np.array(support[0])]).max())
 
-    # col player
-    v = strategy[0].reshape(strategy[0].size, 1)
-
-    # utilities of col when row player plays strategy
-    col_util = np.dot(B.T, v)
-
-    # utilities for strategies in support
-    col_support_util = col_util[np.array(support[1])]
-
-    # check if best response
-    fl2 = (col_util.max() == col_support_util.max())
+    
 
     return (fl1 and fl2)
 
@@ -104,8 +100,10 @@ def find_prob_vector(A, row_sup=None, col_sup=None):
             X.append(temp)
         M = np.append(M, X, axis=0,)
 
-    M = np.append(M, np.ones((1, M.shape[1])), axis=0)
-    b = np.append(np.zeros(len(M) - 1), [1])
+    I1 = np.ones((1,M.shape[1]))
+    M = np.append(M, I1, axis=0)
+    I2 = np.zeros(len(M)-1)
+    b = np.append(I2, [1])
 
     try:
         prob = np.linalg.solve(M, b)
