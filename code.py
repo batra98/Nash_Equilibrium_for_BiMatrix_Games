@@ -33,37 +33,6 @@ def support_pairs(A, B):
     return result
 
 
-def find_prob_vector(A, row_sup=None, col_sup=None):
-    """
-    Return probability vector for mixed startegy
-    """
-    # Ensure differences between pairs of pure strategies are the same
-    M = A[np.array(row_sup)]
-    M = M - np.roll(A[np.array(row_sup)], 1, axis=0)
-    M = M[:-1]
-
-    # Columns that must be played with prob 0
-    zero_columns = set(range(A.shape[1]))
-    zero_columns = zero_columns - set(col_sup)
-
-    if len(zero_columns):
-        X = [[int(i == j) for i, col in enumerate(M.T)] for j in zero_columns]
-        M = np.append(M, X, axis=0,)
-
-    # Ensure have probability vector
-    M = np.append(M, np.ones((1, M.shape[1])), axis=0)
-    b = np.append(np.zeros(len(M) - 1), [1])
-
-    try:
-        prob = np.linalg.solve(M, b)
-        for ind in prob:
-            if(ind < 0):
-                return False
-        return prob
-    except np.linalg.linalg.LinAlgError:
-        return False
-
-
 def obey_support(strategy, support):
     """
     Test if strategy obeys its support
@@ -75,25 +44,6 @@ def obey_support(strategy, support):
         elif index not in support and value > 0:
             return False
     return True
-
-
-def calculate_strat(A, B):
-    """
-    Return possible startegies 
-    """
-    result = []
-    for pair in support_pairs(A, B):
-
-        s1 = find_prob_vector(B.T, *(pair[::-1]))
-        s2 = find_prob_vector(A, *pair)
-
-        if s1 is False:
-            continue
-        elif s2 is False:
-            continue
-        elif obey_support(s1, pair[0]) and obey_support(s2, pair[1]):
-            result.append((s1, s2, pair[0], pair[1]))
-    return result
 
 
 def IS_NE(strategy, support, payoff):
@@ -128,6 +78,62 @@ def IS_NE(strategy, support, payoff):
     fl2 = (col_util.max() == col_support_util.max())
 
     return (fl1 and fl2)
+
+
+def find_prob_vector(A, row_sup=None, col_sup=None):
+    """
+    Return probability vector for mixed startegy
+    """
+
+    M = A[np.array(row_sup)]
+    M = M - np.roll(M, 1, axis=0)
+    M = M[:-1]
+
+    zero_columns = set(range(A.shape[1]))
+    zero_columns = zero_columns - set(col_sup)
+
+    if len(zero_columns):
+        X = []
+        for j in zero_columns:
+            temp = []
+            for i, col in enumerate(M.T):
+                if(i == j):
+                    temp.append(1)
+                else:
+                    temp.append(0)
+            X.append(temp)
+        M = np.append(M, X, axis=0,)
+
+    M = np.append(M, np.ones((1, M.shape[1])), axis=0)
+    b = np.append(np.zeros(len(M) - 1), [1])
+
+    try:
+        prob = np.linalg.solve(M, b)
+        for ind in prob:
+            if(ind < 0):
+                return False
+        return prob
+    except np.linalg.linalg.LinAlgError:
+        return False
+
+
+def calculate_strat(A, B):
+    """
+    Return possible startegies 
+    """
+    result = []
+    for pair in support_pairs(A, B):
+
+        s1 = find_prob_vector(B.T, *(pair[::-1]))
+        s2 = find_prob_vector(A, *pair)
+
+        if s1 is False:
+            continue
+        elif s2 is False:
+            continue
+        elif obey_support(s1, pair[0]) and obey_support(s2, pair[1]):
+            result.append((s1, s2, pair[0], pair[1]))
+    return result
 
 
 def support_enumeration(A, B):
