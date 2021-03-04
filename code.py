@@ -147,6 +147,7 @@ def support_enumeration(A, B):
 
     result = []
     for s1, s2, sup1, sup2 in indifference_strategies(A, B):
+        print(s1)
         if is_ne((s1, s2), (sup1, sup2), (A, B)):
             result.append((s1, s2))
     return result

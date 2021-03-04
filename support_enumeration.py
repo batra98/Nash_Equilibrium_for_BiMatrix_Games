@@ -163,6 +163,7 @@ def support_enumeration(A, B, non_degenerate=False, tol=10 ** -16):
     ):
         if is_ne((s1, s2), (sup1, sup2), (A, B)):
             count += 1
+            print(s1)
             yield s1, s2
     if count % 2 == 0:
         warning = """
