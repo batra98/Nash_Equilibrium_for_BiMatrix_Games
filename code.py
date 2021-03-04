@@ -51,16 +51,17 @@ def solve_indifference(A, rows=None, columns=None):
         player indifferent. Will return False if all entries are not >= 0.
     """
     # Ensure differences between pairs of pure strategies are the same
-    M = (A[np.array(rows)] - np.roll(A[np.array(rows)], 1, axis=0))[:-1]
+    M = A[np.array(rows)] 
+    M = M - np.roll(A[np.array(rows)], 1, axis=0)
+    M = M[:-1]
     # Columns that must be played with prob 0
-    zero_columns = set(range(A.shape[1])) - set(columns)
 
-    if zero_columns != set():
-        M = np.append(
-            M,
-            [[int(i == j) for i, col in enumerate(M.T)] for j in zero_columns],
-            axis=0,
-        )
+    zero_columns = set(range(A.shape[1]))
+    zero_columns = zero_columns - set(columns)
+
+    if len(zero_columns):
+        X = [[int(i == j) for i, col in enumerate(M.T)] for j in zero_columns]
+        M = np.append(M,X,axis=0,)
 
     # Ensure have probability vector
     M = np.append(M, np.ones((1, M.shape[1])), axis=0)
@@ -68,9 +69,10 @@ def solve_indifference(A, rows=None, columns=None):
 
     try:
         prob = np.linalg.solve(M, b)
-        if all(prob >= 0):
-            return prob
-        return False
+        for ind in prob:
+            if(ind < 0):
+                return False
+        return prob
     except np.linalg.linalg.LinAlgError:
         return False
 
@@ -79,9 +81,6 @@ def obey_support(strategy, support):
     """
     Test if strategy obeys its support
     """
-
-    if strategy is False:
-        return False
 
     for index, value in enumerate(strategy):
         if index in support and value <= 0:
@@ -101,8 +100,12 @@ def indifference_strategies(A, B):
         s1 = solve_indifference(B.T, *(pair[::-1]))
         s2 = solve_indifference(A, *pair)
 
-        if obey_support(s1, pair[0]) and obey_support(s2, pair[1]):
-            result.append((s1, s2, pair[0], pair[1]))
+        if s1 is False:
+            continue
+        elif s2 is False :
+            continue
+        elif obey_support(s1, pair[0]) and obey_support(s2, pair[1]):
+                result.append((s1, s2, pair[0], pair[1]))
     return result
 
 
