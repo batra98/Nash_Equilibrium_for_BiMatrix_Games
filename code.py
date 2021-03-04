@@ -108,10 +108,11 @@ def indifference_strategies(A, B):
     for pair in potential_support_pairs(A, B):
 
         s1 = solve_indifference(B.T, *(pair[::-1]))
-        s2 = solve_indifference(A, *pair)
 
-        if s1 and obey_support(s1, pair[0]) and s2 and obey_support(s2, pair[1]):
-            result.append((s1, s2, pair[0], pair[1]))
+        if s1 and obey_support(s1, pair[0]) :
+        	s2 = solve_indifference(A, *pair)
+        	if s2 and obey_support(s2, pair[1]):
+	            result.append((s1, s2, pair[0], pair[1]))
     return result
 
 
