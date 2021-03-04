@@ -132,7 +132,7 @@ def is_ne(strategy, support, payoff):
     row_support_util = row_util[np.array(support[0])]
 
     # check if best response
-    fl1 = (row_util.max() == row_support_util[0])
+    fl1 = (row_util.max() == row_support_util.max())
 
     # col player
     v = strategy[0].reshape(strategy[0].size, 1)
