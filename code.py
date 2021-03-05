@@ -57,7 +57,7 @@ def IS_NE(strategy, support, payoff):
     v = strategy[0].reshape(strategy[0].size, 1)
 
     # utilities of col when row player plays strategy
-    col_util = np.dot(B.T, v) 
+    col_util = np.dot(B.T, v)
 
     # check if best response
     fl1 = (col_util.max() == (col_util[np.array(support[1])]).max())
@@ -70,8 +70,6 @@ def IS_NE(strategy, support, payoff):
 
     # check if best response
     fl2 = (row_util.max() == (row_util[np.array(support[0])]).max())
-
-    
 
     return (fl1 and fl2)
 
@@ -100,7 +98,7 @@ def find_prob_vector(A, row_sup=None, col_sup=None):
             X.append(temp)
         M = np.append(M, X, axis=0,)
 
-    I1 = np.ones((1,M.shape[1]))
+    I1 = np.ones((1, M.shape[1]))
     M = np.append(M, I1, axis=0)
     I2 = np.zeros(len(M)-1)
     b = np.append(I2, [1])
@@ -166,15 +164,30 @@ if __name__ == "__main__":
     A = np.array(A)
     B = np.array(B)
 
-    result = support_enumeration(A, B)
+    if(rows == 1 or cols == 1):
+
+        result = []
+        strat1 = np.zeros(rows)
+        strat2 = np.zeros(cols)
+
+        if rows == 1:
+            strat1[0] = 1.0
+            strat2[np.argmax(B)] = 1.0
+        else:
+            strat1[np.argmax(A)] = 1.0
+            strat2[0] = 1.0
+
+        result.append((strat1, strat2))
+    else:
+        result = support_enumeration(A, B)
 
     print(len(result))
     for strat1, strat2 in result:
         print_str_strat = ""
-        for ind,ele in enumerate(strat1):
-            print_str_strat+= str(ele) + " "
+        for ind, ele in enumerate(strat1):
+            print_str_strat += str(ele) + " "
         print(print_str_strat.strip())
         print_str_strat = ""
-        for ind,ele in enumerate(strat2):
-            print_str_strat+= str(ele) + " "
+        for ind, ele in enumerate(strat2):
+            print_str_strat += str(ele) + " "
         print(print_str_strat.strip())
